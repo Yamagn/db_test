@@ -32,21 +32,27 @@ fs.open(file_name, "r", (err, fd) => {
 start_repl();
 async function start_repl() {
     let query = "";
-    while (query !== "quit") {
+    while (query !== "quit;") {
         process.stdout.write("negi-ramen> ");
         query = await std_input();
-        if (query !== "quit") {
-            let parsed_query = parse_sql(query);
+        if (query !== "quit;") {
+            try {
+                let parsed_query = parse_sql(query);
+            }
+            catch (e) {
+                console.log(e);
+                continue;
+            }
         }
     }
+    console.log('bye');
 }
 function parse_sql(sql) {
     const parser = new node_sql_parser_1.Parser();
-    const ast = parser.astify(sql);
+    const ast = parser.astify(sql, { database: 'PostgresQL' });
     console.log(ast);
     const parsed_query = parser.sqlify(ast);
-    console.log(parsed_query);
-    return [''];
+    return ast;
 }
 async function std_input() {
     process.stdin.resume();
@@ -57,8 +63,10 @@ async function std_input() {
         output: process.stdout
     });
     for await (const line of reader) {
-        query = line;
-        reader.close();
+        query += line;
+        if (query.slice(-1) === ';') {
+            reader.close();
+        }
     }
     return query;
 }
