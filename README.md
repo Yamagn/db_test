@@ -3,5 +3,5 @@
 ## Usage
 
 ```
-npm install 
+npm ci
 ```
