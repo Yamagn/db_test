@@ -4,4 +4,8 @@
 
 ```
 npm ci
+
+npx tsc
+
+node dist/index.js {{ Database_file_name }}
 ```
